@@ -1,4 +1,4 @@
-package com.sevdesk.lite.invoice.entity
+package com.sevdesk.lite.customer.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -9,15 +9,15 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "CUSTOMERS")
-class Customer {
+data class Customer (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    var id: Long? = null
+    val id: Long,
 
     @Column(name = "givenname")
-    var givenname: String? = null
+    val givenname: String,
 
     @Column(name = "surname")
-    var surname: String? = null
-}
+    val surname: String,
+)

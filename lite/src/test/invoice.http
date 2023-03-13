@@ -1,0 +1,72 @@
+### GET
+GET http://localhost:8081/invoices
+
+### POST
+POST http://localhost:8081/invoices
+Content-Type: application/json
+
+{
+  "dueDate": "2023-04-20",
+  "invoiceNumber": "ABC-123",
+  "quantity": 1.0,
+  "priceNet": 14.99,
+  "customer": {
+    "givenname": "Guybrush",
+    "surname": "Threepwood"
+  }
+}
+
+### POST Validation Error priceNet
+POST http://localhost:8081/invoices
+Content-Type: application/json
+
+{
+  "dueDate": "2023-01-20",
+  "invoiceNumber": "ABC-123",
+  "quantity": 1.0,
+  "priceNet": -14.99,
+  "customer": {
+    "givenname": "Guybrush",
+    "surname": "Threepwood"
+  }
+}
+
+### POST Validation Error due date
+POST http://localhost:8081/invoices
+Content-Type: application/json
+
+{
+  "dueDate": "2023-01-20",
+  "invoiceNumber": "ABC-123",
+  "quantity": 1.0,
+  "priceNet": 14.99,
+  "customer": {
+    "givenname": "Guybrush",
+    "surname": "Threepwood"
+  }
+}
+
+### Post full payment of an invoice
+POST http://localhost:8081/invoices/pay
+Content-Type: application/json
+
+{
+  "id": 3,
+  "payingAmount": 17.83
+}
+
+### Post partly payment of an invoice
+POST http://localhost:8081/invoices/pay
+Content-Type: application/json
+
+{
+  "id": 3,
+  "payingAmount": 7.84
+}
+
+
+### Put (Closing a invoice)
+PUT http://localhost:8081/invoices/3
+
+
+

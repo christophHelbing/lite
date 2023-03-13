@@ -35,8 +35,14 @@ alter table INVOICES
 alter table INVOICES
     add price_net double default 0 not null;
 
+-- alter table INVOICES
+--     add price_gross double default 0 not null;
+
 alter table INVOICES
-    add price_gross double default 0 not null;
+    add paid_date DATETIME;
+
+alter table INVOICES
+    add paid_amount double default 0;
 
 create table CUSTOMERS
 (

@@ -1,13 +1,14 @@
 package com.sevdesk.lite.invoice.domain
 
+import com.fasterxml.jackson.annotation.JsonGetter
 import com.sevdesk.lite.customer.domain.Customer
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import javax.persistence.*
-import kotlin.jvm.Transient
 
+// TODO A domain model should never be dependent on third-party libraries. Remove the spring part.
 @Entity
 @Table(name = "INVOICES")
 data class Invoice(
@@ -40,24 +41,16 @@ data class Invoice(
     @Column(name = "price_net")
     val priceNet: BigDecimal,
 
-    /*
-        Transient calculated values are not serialized via jackson, that's why Iam using postLoad.
-        Tried using Annotation JsonProperty or JsonInclude to solve this better, but this was not working.
-
-        I doesn't like this solution with var and setting the values in the postLoad method.
-     */
-    @Transient
-    var priceGross: BigDecimal = BigDecimal.ZERO,
-
-    @Transient
-    var totalPrice: BigDecimal = BigDecimal.ZERO,
-
     @ManyToOne(cascade = [CascadeType.ALL])
     val customer: Customer,
 ) {
-    @PostLoad
-    fun postLoad() {
-        priceGross = priceNet.plus(priceNet.times(BigDecimal.valueOf(0.19))).setScale(2, RoundingMode.FLOOR)
-        totalPrice = priceGross.times(quantity).setScale(2, RoundingMode.FLOOR)
+    @JsonGetter("priceGross")
+    fun calculatePriceGross() =  priceNet.plus(priceNet.times(BigDecimal.valueOf(0.19))).setScale(2, RoundingMode.FLOOR)
+
+    @JsonGetter("totalPrice")
+    fun calculateTotalPrice() = calculatePriceGross().times(quantity).setScale(2, RoundingMode.FLOOR)
+
+    fun isPaid(): Boolean {
+        return paidAmount >= calculateTotalPrice()
     }
 }

@@ -38,7 +38,7 @@ class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : Inv
         } else if (invoice.dueDate.isBefore(LocalDate.now())) {
             Failure.ValidationError("Due date should never been in the past").left()
         } else {
-            return trap {
+            trap {
                 invoiceRepository.save(invoice)
             }
         }
@@ -56,26 +56,27 @@ class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : Inv
         either {
             val possibleInvoice = getInvoice(id = id).bind()
 
-            if (possibleInvoice.status == InvoiceState.TOTAL_PAID) {
-                Failure.ValidationError("The invoice with the id: $id is already fully paid").left()
-            } else {
-                /* Getting payment state by calculating the present paid amount */
-                val getPaymentState: (Invoice) -> InvoiceState = {
-                    if (amount + it.paidAmount == it.totalPrice) InvoiceState.TOTAL_PAID else InvoiceState.PARTLY_PAID
-                }
+            /* Checking whether the invoice is already fully paid */
+            Either.catch { require(!possibleInvoice.isPaid()) }.mapLeft {
+                Failure.ValidationError("The invoice with the id: $id is already fully paid")
+            }.bind()
 
-                /* Calculate new paid amount */
-                val getPaidAmount: (Invoice) -> BigDecimal = {
-                    amount.plus(it.paidAmount)
-                }
+            /* Getting payment state by calculating the present paid amount and compare it to the totalPrice */
+            val getPaymentState: (Invoice, BigDecimal) -> InvoiceState = { invoice, amount ->
+                if (amount + invoice.paidAmount >= invoice.calculateTotalPrice()) InvoiceState.TOTAL_PAID else InvoiceState.PARTLY_PAID
+            }
 
-                possibleInvoice.copy(
-                    status = getPaymentState(possibleInvoice),
-                    paidDate = OffsetDateTime.now(),
-                    paidAmount = getPaidAmount(possibleInvoice),
-                ).let {
-                    saveInvoice(it)
-                }
+            /* Calculate new paid amount */
+            val getPaidAmount: (Invoice, BigDecimal) -> BigDecimal = { invoice, amount ->
+                amount.plus(invoice.paidAmount)
+            }
+
+            possibleInvoice.copy(
+                status = getPaymentState(possibleInvoice, amount),
+                paidDate = OffsetDateTime.now(),
+                paidAmount = getPaidAmount(possibleInvoice, amount),
+            ).let {
+                saveInvoice(it).bind()
             }
         }
 }

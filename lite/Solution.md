@@ -12,7 +12,7 @@
     - What are considerations to change the projects structure?
 
 
-## Tasks
+## Tasks Implemented
 - **"Where is my Invoice?"** - `database`
   - Do you really think it's a good idea to just remove an invoice?
   > I think it is no good idea
@@ -41,18 +41,26 @@
   > Fields for paid-timestamp, amount of payment are added to the table and domain model.
     The state of payment is shown via the invoice state, so it is possible to pay partly.
 
+- **"these are not the droids you're looking for"** - `security`
+  - it should be obvious, that it's a bad idea to let everyone see your invoices
+  - implement some basic authorization and authentication to protect the API from unauthorized users 
+  > Added simple spring security basic authentication. Using the InMemoryUserDetailsManager for storing some allowed
+  > users. Securing the service methods via PreAuthorize. The writing routes can only be called by the admin and the read
+  > routes by the user and admin.
+
+### Tasks not implemented
 - **"I am curious"** - `feature`
   - I think it would be interesting to see who changed the data and when
   - Could this be a solution, that fits all tables at once
   - Would a rollback be nice as well?
 - **"Fast Forward"** - `feature`
   - Some data really should never be changed anymore. Make the Invoices an append-only data structure
-  where every change results in a new dataset which is linked to the previous version
+    where every change results in a new dataset which is linked to the previous version
   > For these two tasks I think we start to talk about Event-Sourcing. This is a pattern where all changes are stored
   > by an immutable sequence of events. These events can also contain auditing information, so we can see, who was
   > changing which field. The events represent a history for an invoice, so we are also able to roll back to a certain
   > state. \
   > The stream of stored events we create is an append-only data structure. \
   > I was implementing a small example for an event-driven-architecture, which you can find [here](https://github.com/christophHelbing/event-sourcing-example)
-    
+ 
  

@@ -1,9 +1,27 @@
 ### GET
 GET http://localhost:8081/invoices
+Authorization: Basic admin password
 
-### POST
+### POST Successful
 POST http://localhost:8081/invoices
 Content-Type: application/json
+Authorization: Basic admin password
+
+{
+  "dueDate": "2023-04-20",
+  "invoiceNumber": "ABC-123",
+  "quantity": 1.0,
+  "priceNet": 14.99,
+  "customer": {
+    "givenname": "Guybrush",
+    "surname": "Threepwood"
+  }
+}
+
+### POST Unauthorized by wrong role
+POST http://localhost:8081/invoices
+Content-Type: application/json
+Authorization: Basic user password
 
 {
   "dueDate": "2023-04-20",
@@ -19,6 +37,7 @@ Content-Type: application/json
 ### POST Validation Error priceNet
 POST http://localhost:8081/invoices
 Content-Type: application/json
+Authorization: Basic admin password
 
 {
   "dueDate": "2023-01-20",
@@ -34,6 +53,7 @@ Content-Type: application/json
 ### POST Validation Error due date
 POST http://localhost:8081/invoices
 Content-Type: application/json
+Authorization: Basic admin password
 
 {
   "dueDate": "2023-01-20",
@@ -49,6 +69,7 @@ Content-Type: application/json
 ### Post full payment of an invoice
 POST http://localhost:8081/invoices/pay
 Content-Type: application/json
+Authorization: Basic admin password
 
 {
   "id": 1,
@@ -58,15 +79,16 @@ Content-Type: application/json
 ### Post partly payment of an invoice
 POST http://localhost:8081/invoices/pay
 Content-Type: application/json
+Authorization: Basic admin password
 
 {
   "id": 1,
   "payingAmount": 9.99
 }
 
-
 ### Put (Closing a invoice)
-PUT http://localhost:8081/invoices/3
+PUT http://localhost:8081/invoices/34
+Authorization: Basic admin password
 
 
 

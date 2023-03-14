@@ -8,7 +8,10 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import javax.persistence.*
 
-// TODO A domain model should never be dependent on third-party libraries. Remove the spring part.
+/*
+    A domain model should not include dependencies to third-party-libraries. So the spring
+    dependencies should be removed. To keep it simple the entity is
+ */
 @Entity
 @Table(name = "INVOICES")
 data class Invoice(
@@ -45,7 +48,7 @@ data class Invoice(
     val customer: Customer,
 ) {
     @JsonGetter("priceGross")
-    fun calculatePriceGross() =  priceNet.plus(priceNet.times(BigDecimal.valueOf(0.19))).setScale(2, RoundingMode.FLOOR)
+    fun calculatePriceGross() = priceNet.plus(priceNet.times(BigDecimal.valueOf(0.19))).setScale(2, RoundingMode.FLOOR)
 
     @JsonGetter("totalPrice")
     fun calculateTotalPrice() = calculatePriceGross().times(quantity).setScale(2, RoundingMode.FLOOR)

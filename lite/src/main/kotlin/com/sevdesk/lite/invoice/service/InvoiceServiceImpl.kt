@@ -10,6 +10,7 @@ import com.sevdesk.lite.invoice.domain.Invoice
 import com.sevdesk.lite.invoice.domain.InvoiceState
 import com.sevdesk.lite.invoice.port.InvoiceRepository
 import com.sevdesk.lite.invoice.port.InvoiceService
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -18,12 +19,13 @@ import java.time.OffsetDateTime
 @Service
 class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : InvoiceService {
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     override fun getAllInvoices(): Either<Failure, List<Invoice>> =
         trap {
             invoiceRepository.findAll().toList()
         }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     override suspend fun getInvoice(id: Long): Either<Failure, Invoice> =
         either {
             val possibleInvoice = trap {
@@ -32,6 +34,7 @@ class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : Inv
             ensureNotNull(possibleInvoice) { Failure.NotFoundFailure(id, Invoice::class) }
         }
 
+    @PreAuthorize("hasRole('ADMIN')")
     override fun saveInvoice(invoice: Invoice): Either<Failure, Invoice> {
         return if (invoice.priceNet.signum() < 0) {
             Failure.ValidationError("The price should never be negative.").left()
@@ -44,6 +47,7 @@ class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : Inv
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     override suspend fun closeInvoice(id: Long): Either<Failure, Unit> =
         either {
             val possibleInvoice = getInvoice(id = id).bind()
@@ -52,6 +56,7 @@ class InvoiceServiceImpl(private val invoiceRepository: InvoiceRepository) : Inv
             }
         }
 
+    @PreAuthorize("hasRole('ADMIN')")
     override suspend fun payForInvoice(id: Long, amount: BigDecimal): Either<Failure, Unit> =
         either {
             val possibleInvoice = getInvoice(id = id).bind()

@@ -3,7 +3,8 @@
 * Make attributes in data classes immutable (val instead of var)
 * Removed nullability of the most attributes in data classes
 * Create interface for the service 
-* Changing service implementation
+* Adding Either as return type for all service methods
+* Controller Requests return a ResponseEntity<T>
 * Removed repository from rest-controller -> no clean 3 layer architecture
 * Create package for the domain customer
 * Renaming files/packages for better overview
@@ -36,7 +37,7 @@
   - Should it be possible to create an invoice with negative price?
   - or was the due date perhaps already yesterday?
    > It should not be possible to set a negative price. I implemented some simple validation to the saveInvoice
-   > service method. There are more possibilities for validation rules, I could implement.
+   > service method. 
    > In a more complex scenario, I would create a separate Validation-Layer/Service, which 
    > contains all validations and which can be used in a service method, if necessary.
 
@@ -69,7 +70,7 @@
   > state. \
   > I was implementing a small example for an event-driven-architecture, which you can find [here](https://github.com/christophHelbing/event-sourcing-example)
   > \
-  > Another way to store some auditing information is enabling/using JPA Auditing. But Iam not 
-  > very experienced in Spring Security, so I didn't implement it.
+  > Another way to store some auditing information is enabling/using JPA Auditing. \
+  > But Iam not very experienced in Spring Security, so I didn't implement it.
  
  

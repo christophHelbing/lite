@@ -1,4 +1,4 @@
-### GET
+### GET All Invoices
 GET http://localhost:8081/invoices
 Authorization: Basic admin password
 
@@ -83,11 +83,11 @@ Authorization: Basic admin password
 
 {
   "id": 1,
-  "payingAmount": 9.99
+  "payingAmount": 7.84
 }
 
 ### Put (Closing a invoice)
-PUT http://localhost:8081/invoices/34
+PUT http://localhost:8081/invoices/1
 Authorization: Basic admin password
 
 

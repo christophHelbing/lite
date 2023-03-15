@@ -1,7 +1,9 @@
 ## Structural Refactoring
-* Changing entities to kotlin data classes, make attributes immutable and removed nullability.
+* Changing entities to kotlin data classes
+* Make attributes in data classes immutable (val instead of var)
+* Removed nullability of the most attributes in data classes
 * Create interface for the service 
-* Changing serivce implementation
+* Changing service implementation
 * Removed repository from rest-controller -> no clean 3 layer architecture
 * Create package for the domain customer
 * Renaming files/packages for better overview
@@ -15,10 +17,11 @@
 ## Tasks Implemented
 - **"Where is my Invoice?"** - `database`
   - Do you really think it's a good idea to just remove an invoice?
-  > I think it is no good idea
+  > I think it is no good idea to delete an invoice. It is better to archive them.
   - If yes, what's happening with the customer?
   - If no, why don't you prevent it?
-  > I think archiving by setting a certain state would be better
+  > I think archiving by setting a certain state would be better, therefor Iam using
+  > the state CLOSED and a put Endpoint to set a certain invoice CLOSED.
 
 - **"1+1=5"** - `feature`
   - Some values should not be set from outside!
@@ -32,7 +35,10 @@
 - **"You talk in riddles"** - `feature`
   - Should it be possible to create an invoice with negative price?
   - or was the due date perhaps already yesterday?
-   > Validation was added
+   > It should not be possible to set a negative price. I implemented some simple validation to the saveInvoice
+   > service method. There are more possibilities for validation rules, I could implement.
+   > In a more complex scenario, I would create a separate Validation-Layer/Service, which 
+   > contains all validations and which can be used in a service method, if necessary.
 
 - **"Give me all your money"** - `feature`
   - write an endpoint to mark an invoice paid
@@ -46,7 +52,8 @@
   - implement some basic authorization and authentication to protect the API from unauthorized users 
   > Added simple spring security basic authentication. Using the InMemoryUserDetailsManager for storing some allowed
   > users. Securing the service methods via PreAuthorize. The writing routes can only be called by the admin and the read
-  > routes by the user and admin.
+  > routes by the user and admin. \
+  > In a more complex scenario, we should think about using an IAM software like keycloak.
 
 ### Tasks not implemented
 - **"I am curious"** - `feature`
@@ -60,7 +67,9 @@
   > by an immutable sequence of events. These events can also contain auditing information, so we can see, who was
   > changing which field. The events represent a history for an invoice, so we are also able to roll back to a certain
   > state. \
-  > The stream of stored events we create is an append-only data structure. \
   > I was implementing a small example for an event-driven-architecture, which you can find [here](https://github.com/christophHelbing/event-sourcing-example)
+  > \
+  > Another way to store some auditing information is enabling/using JPA Auditing. But Iam not 
+  > very experienced in Spring Security, so I didn't implement it.
  
  
